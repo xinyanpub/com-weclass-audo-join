@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0" id="com-weclass-audio-join" version="1.0.0">
+  <engines>
+    <engine name="cordova" version=">=3.0.0" />
+  </engines>
+  <name>AudioJoin</name>
+  <description>Plugin for android to join multi amr to one amr.</description>
+  <author>Jonathan Zhang</author>
+  <keywords>android Audio Recording Amr file join</keywords>
+  <license>MIT</license>
+
+  <!-- JavaScript interface -->
+  <js-module src="www/AudioJoin.js" name="AudioJoin" target="www/AudioJoin.js">
+    <clobbers target="window.audioJoin" />
+  </js-module>
+  <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="AudioJoin">
+                <param name="android-package" value="com.weclass.audio.AudioJoin" />
+            </feature>
+        </config-file>
+        <config-file target="AndroidManifest.xml" parent="/*">
+    		<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    		<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+        </config-file>
+		<source-file src="src/android/com/weclass/audio/AudioJoin.java" target-dir="src/com/weclass/audio" />
+  </platform>
+</plugin>
