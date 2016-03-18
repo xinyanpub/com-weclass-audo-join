@@ -1,4 +1,4 @@
-## PhoneGap/Cordova AudioEncode Plugin
+## PhoneGap/Cordova AudioJoin Plugin
  * Original by Jonathan Zhang
 
 ## About this Plugin
