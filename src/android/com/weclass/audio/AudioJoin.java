@@ -17,19 +17,21 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
+import android.net.Uri;
 
 public class AudioJoin extends CordovaPlugin {
-	public static String TAG = "AudioJoin";
-	 
-	private CallbackContext callbackContext;
-	private JSONObject params;
-	/**
+    public static String TAG = "AudioJoin";
+
+    private CallbackContext callbackContext;
+    private JSONObject params;
+    /**
      * @param audio files list
      */
     public boolean join(String dstFilePath, String[] list) {
         long dateTaken = System.currentTimeMillis();
         String strTempFile = Long.toString(dateTaken);
-        File mRecordAudioFile = new File(dstFilePath);
+        Uri uri = Uri.parse(dstFilePath);
+        File mRecordAudioFile = new File(uri.getPath());
 
         FileOutputStream fileOutputStream = null;
         boolean headerexist = true;
@@ -48,7 +50,8 @@ public class AudioJoin extends CordovaPlugin {
         }
 
         for (int i = 0; i < list.length; i++) {
-            File tempfile = new File(list[i]);
+            Uri suri = Uri.parse(list[i]);
+            File tempfile = new File(suri.getPath());
             try {
                 FileInputStream fileInputStream = new FileInputStream(tempfile);
                 byte[] myByte = new byte[fileInputStream.available()];
@@ -83,46 +86,46 @@ public class AudioJoin extends CordovaPlugin {
             e.printStackTrace();
         }
         return true;
-    }	
-	
-	public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
-		Log.e(TAG, "AudioJoin execute begin");
-		this.callbackContext = callbackContext;
-		this.params = args.getJSONObject(0);
-		if (action.equals("join")) {
-			Log.e(TAG, "join");
-			//srcPaths = this.params.getString("srcPaths");
-			//srcPaths = this.params.getJSONArray("srcPaths");
-			JSONArray srcPathsJA = this.params.getJSONArray("srcPaths");
-			final String[] srcPaths = new String[srcPathsJA.length()];
-			for(int i=0; i<srcPathsJA.length(); i++) {
-				srcPaths[i] = srcPathsJA.getString(i);
-			}
-			Log.e(TAG, srcPaths.toString());
-			final String dstPath = this.params.getString("dstPath");
-			Log.e(TAG, "begin Run");
-			Log.e(TAG, "begin Run:" + dstPath);
-			
-			if (this.cordova != null) {
-				cordova.getThreadPool().execute(new Runnable() {  
-					public void run() {
-						boolean result = join(dstPath, srcPaths);
-						if(result) {
-							JSONObject audioInfo = new JSONObject();
-							try{
-								audioInfo.put("dstPath", dstPath);
-							}catch(JSONException e){
-								Log.e("onActivityResult", "faied", e);
-							}
-							callbackContext.success(audioInfo);
-						}else{
-							callbackContext.error("join failed");
-						}
-					}
-				});
-			}
-		}
-		return true;
-	}	
+    }
+
+    public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
+        Log.e(TAG, "AudioJoin execute begin");
+        this.callbackContext = callbackContext;
+        this.params = args.getJSONObject(0);
+        if (action.equals("join")) {
+            Log.e(TAG, "join");
+            //srcPaths = this.params.getString("srcPaths");
+            //srcPaths = this.params.getJSONArray("srcPaths");
+            JSONArray srcPathsJA = this.params.getJSONArray("srcPaths");
+            final String[] srcPaths = new String[srcPathsJA.length()];
+            for(int i=0; i<srcPathsJA.length(); i++) {
+                srcPaths[i] = srcPathsJA.getString(i);
+            }
+            Log.e(TAG, srcPaths.toString());
+            final String dstPath = this.params.getString("dstPath");
+            Log.e(TAG, "begin Run");
+            Log.e(TAG, "begin Run:" + dstPath);
+
+            if (this.cordova != null) {
+                cordova.getThreadPool().execute(new Runnable() {
+                    public void run() {
+                        boolean result = join(dstPath, srcPaths);
+                        if(result) {
+                            JSONObject audioInfo = new JSONObject();
+                            try{
+                                audioInfo.put("dstPath", dstPath);
+                            }catch(JSONException e){
+                                Log.e("onActivityResult", "faied", e);
+                            }
+                            callbackContext.success(audioInfo);
+                        }else{
+                            callbackContext.error("join failed");
+                        }
+                    }
+                });
+            }
+        }
+        return true;
+    }
 
 }
